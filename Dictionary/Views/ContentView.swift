@@ -2,15 +2,42 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var model: DictionaryViewModel
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var showingHistory = false
     @State private var showingSettings = false
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
+    /// On iPhone the split view collapses to a single column, so the entry has
+    /// to be pushed onto a stack; on iPad it stays in the detail column.
+    private var isCompact: Bool { horizontalSizeClass == .compact }
+
+    /// Mirrors the current entry as a one-element navigation path, so looking a
+    /// word up pushes the entry and popping it clears the entry. Tapping a word
+    /// inside an entry swaps the destination in place, which keeps the app's own
+    /// Back / Forward chevrons as the history control.
+    private var path: Binding<[String]> {
+        Binding(
+            get: { model.currentTerm.map { [$0] } ?? [] },
+            set: { if $0.isEmpty { model.closeEntry() } }
+        )
+    }
+
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            sidebar
-        } detail: {
-            detail
+        Group {
+            if isCompact {
+                NavigationStack(path: path) {
+                    sidebar
+                        .navigationDestination(for: String.self) { _ in
+                            detail
+                        }
+                }
+            } else {
+                NavigationSplitView(columnVisibility: $columnVisibility) {
+                    sidebar
+                } detail: {
+                    detail
+                }
+            }
         }
         .environment(\.openURL, OpenURLAction { url in
             if let word = LookupLink.word(from: url) {
