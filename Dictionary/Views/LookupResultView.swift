@@ -74,14 +74,16 @@ struct EntryScrollView: View {
                     if let from = redirectedFrom {
                         redirectNote(from: from)
                     }
-                    ForEach(entries) { entry in
-                        EntryView(entry: entry, source: model.source)
-                        if entry.id != entries.last?.id {
-                            Divider()
+                    if model.source.showsWordNet {
+                        ForEach(entries) { entry in
+                            EntryView(entry: entry, source: model.source)
+                            if entry.id != entries.last?.id {
+                                Divider()
+                            }
                         }
                     }
-                    ForEach(model.importedEntries) { imported in
-                        if !entries.isEmpty || imported != model.importedEntries.first {
+                    ForEach(shownImported) { imported in
+                        if showsWordNetContent || imported != shownImported.first {
                             Divider()
                         }
                         importedSection(imported)
@@ -98,6 +100,17 @@ struct EntryScrollView: View {
         .navigationTitle(entries.first?.word ?? model.currentTerm ?? "")
     }
 
+    /// The imported dictionaries the selected source lets through.
+    private var shownImported: [ImportedDefinition] {
+        model.importedEntries.filter { model.source.shows(importedName: $0.dictionaryName) }
+    }
+
+    /// Whether anything from WordNet is actually on screen above the imported
+    /// sections, which decides who draws the headword and the divider.
+    private var showsWordNetContent: Bool {
+        model.source.showsWordNet && !entries.isEmpty
+    }
+
     /// An imported dictionary's text for the word. StarDict entries are free
     /// text rather than structured senses, so they are shown as a block under
     /// the dictionary's own name.
@@ -105,7 +118,7 @@ struct EntryScrollView: View {
     private func importedSection(_ imported: ImportedDefinition) -> some View {
         let scale = CGFloat(model.textScale)
         VStack(alignment: .leading, spacing: 10) {
-            if entries.isEmpty && imported == model.importedEntries.first {
+            if !showsWordNetContent && imported == shownImported.first {
                 Text(model.currentTerm ?? "")
                     .font(.roboto(34 * scale))
             }
@@ -130,7 +143,7 @@ struct EntryScrollView: View {
     /// that came entirely from an imported dictionary is not theirs.
     @ViewBuilder
     private var attributionFooter: some View {
-        if !entries.isEmpty {
+        if showsWordNetContent {
             Text("WordNet 3.1 © Princeton University · Pronunciations from the CMU Pronouncing Dictionary")
                 .font(.roboto(11))
                 .foregroundStyle(.tertiary)

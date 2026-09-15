@@ -1,13 +1,55 @@
 import SwiftUI
 import Combine
 
-/// Which "dictionary source" is displayed, mirroring the source bar at the
-/// top of an entry in the macOS Dictionary app (All / Dictionary / Thesaurus).
-enum DictionarySource: String, CaseIterable, Identifiable {
-    case all = "All"
-    case dictionary = "Dictionary"
-    case thesaurus = "Thesaurus"
-    var id: String { rawValue }
+/// Which dictionary the entry is showing, mirroring the source bar at the top
+/// of an entry in the macOS Dictionary app.
+///
+/// macOS lists every installed dictionary there, not a fixed three, which is
+/// what this needs to do too: "Thesaurus" is meaningless for a Nepali entry,
+/// and a reader with several languages installed wants to see which one a
+/// definition came from and to narrow to it.
+enum DictionarySource: Hashable, Identifiable {
+    case all
+    /// WordNet's definitions and its synonym/antonym view.
+    case dictionary
+    case thesaurus
+    /// A downloaded or imported dictionary, identified by its own name.
+    case imported(name: String, label: String)
+
+    var label: String {
+        switch self {
+        case .all: return "All"
+        case .dictionary: return "Dictionary"
+        case .thesaurus: return "Thesaurus"
+        case .imported(_, let label): return label
+        }
+    }
+
+    var id: String {
+        switch self {
+        case .all: return "all"
+        case .dictionary: return "dictionary"
+        case .thesaurus: return "thesaurus"
+        case .imported(let name, _): return "imported:\(name)"
+        }
+    }
+
+    /// True when this source should show the given imported dictionary.
+    func shows(importedName: String) -> Bool {
+        switch self {
+        case .all: return true
+        case .imported(let name, _): return name == importedName
+        case .dictionary, .thesaurus: return false
+        }
+    }
+
+    /// True when this source should show WordNet's own sections.
+    var showsWordNet: Bool {
+        switch self {
+        case .all, .dictionary, .thesaurus: return true
+        case .imported: return false
+        }
+    }
 }
 
 @MainActor
@@ -57,6 +99,31 @@ final class DictionaryViewModel: ObservableObject {
     /// Shown on the empty page, the way macOS Dictionary names the dictionary
     /// it is about to search.
     var activeDictionaryName: String { "WordNet 3.1" }
+
+    /// The sources the word on screen actually has, so the bar never offers a
+    /// tab that would open an empty page.
+    var availableSources: [DictionarySource] {
+        var sources: [DictionarySource] = [.all]
+        if let lookup = currentLookup {
+            let entries: [WordEntry]
+            switch lookup {
+            case .found(let entry): entries = [entry]
+            case .redirected(_, let found): entries = found
+            case .notFound: entries = []
+            }
+            if !entries.isEmpty {
+                sources.append(.dictionary)
+                if entries.contains(where: \.hasThesaurusContent) {
+                    sources.append(.thesaurus)
+                }
+            }
+        }
+        for imported in importedEntries {
+            sources.append(.imported(name: imported.dictionaryName, label: imported.tabLabel))
+        }
+        // A lone "All" tab is just a label; the bar hides itself instead.
+        return sources.count > 1 ? sources : []
+    }
 
     var canGoBack: Bool { !backStack.isEmpty }
     var canGoForward: Bool { !forwardStack.isEmpty }
@@ -135,8 +202,14 @@ final class DictionaryViewModel: ObservableObject {
         currentTerm = term
         currentLookup = result
         importedEntries = library.definitions(for: term).map {
-            ImportedDefinition(dictionaryName: $0.dictionary.name, definition: $0.definition)
+            let language = $0.dictionary.language ?? ""
+            return ImportedDefinition(
+                dictionaryName: $0.dictionary.name,
+                tabLabel: language.isEmpty ? $0.dictionary.name : language,
+                definition: $0.definition)
         }
+        // A source picked for the previous word may not exist for this one.
+        if !availableSources.contains(source) { source = .all }
 
         // A word absent from WordNet but present in an imported dictionary is
         // still a hit, and belongs in recents.
@@ -162,6 +235,9 @@ final class DictionaryViewModel: ObservableObject {
 /// One imported dictionary's definition of the current headword.
 struct ImportedDefinition: Identifiable, Equatable, Hashable {
     let dictionaryName: String
+    /// The short name for the source bar - "नेपाली" reads better on a tab than
+    /// "नेपाली बृहत् शब्दकोश".
+    let tabLabel: String
     let definition: String
     var id: String { dictionaryName + "\u{0000}" + definition }
 }
