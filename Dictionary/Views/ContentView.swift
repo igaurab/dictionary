@@ -2,8 +2,11 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var model: DictionaryViewModel
+    @EnvironmentObject private var favorites: FavoritesStore
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var showingHistory = false
+    @State private var showingFavorites = false
+    @State private var showingQuiz = false
     @State private var showingSettings = false
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
@@ -52,6 +55,14 @@ struct ContentView: View {
         .sheet(isPresented: $showingSettings) {
             SettingsView()
         }
+        .sheet(isPresented: $showingFavorites) {
+            FavoritesView { model.lookUp($0) }
+        }
+        .sheet(isPresented: $showingQuiz) {
+            // Quizzing on words you actually looked up is the point; favourites
+            // are the ones you deliberately kept, so they count double here.
+            QuizView(pool: favorites.words + model.recents)
+        }
     }
 
     // MARK: Sidebar — live search results, like the macOS Dictionary sidebar
@@ -92,6 +103,17 @@ struct ContentView: View {
                         Label("Recent Searches", systemImage: "clock")
                     }
                     Button {
+                        showingFavorites = true
+                    } label: {
+                        Label("Saved Words", systemImage: "heart")
+                    }
+                    Button {
+                        showingQuiz = true
+                    } label: {
+                        Label("Quiz", systemImage: "checkmark.circle")
+                    }
+                    Divider()
+                    Button {
                         model.lookUpRandomWord()
                     } label: {
                         Label("Random Word", systemImage: "dice")
@@ -113,6 +135,8 @@ struct ContentView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarTrailing) {
+                        FavoriteButton(word: term)
+
                         Button {
                             model.goBack()
                         } label: {
