@@ -32,14 +32,24 @@ final class DictionaryViewModel: ObservableObject {
     @Published var recents: [String] {
         didSet { UserDefaults.standard.set(recents, forKey: "recentLookups") }
     }
+    /// Off by default: the macOS Dictionary app opens on an empty page, and a
+    /// list of past lookups on the home screen reads as clutter.
+    @Published var showRecentsOnHome: Bool {
+        didSet { UserDefaults.standard.set(showRecentsOnHome, forKey: "showRecentsOnHome") }
+    }
 
     private var searchTask: Task<Void, Never>?
 
     init() {
         recents = UserDefaults.standard.stringArray(forKey: "recentLookups") ?? []
+        showRecentsOnHome = UserDefaults.standard.bool(forKey: "showRecentsOnHome")
         let storedScale = UserDefaults.standard.double(forKey: "textScale")
         textScale = storedScale == 0 ? 1.0 : storedScale
     }
+
+    /// Shown on the empty page, the way macOS Dictionary names the dictionary
+    /// it is about to search.
+    var activeDictionaryName: String { "WordNet 3.1" }
 
     var canGoBack: Bool { !backStack.isEmpty }
     var canGoForward: Bool { !forwardStack.isEmpty }

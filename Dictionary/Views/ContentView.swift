@@ -115,30 +115,46 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var emptySearchState: some View {
-        VStack(spacing: 20) {
-            if model.recents.isEmpty {
-                ContentUnavailableView(
-                    "Dictionary",
-                    systemImage: "character.book.closed",
-                    description: Text("Search 147,000 words, entirely offline.")
-                )
-            } else {
-                List {
-                    Section("Recent") {
-                        ForEach(model.recents.prefix(25), id: \.self) { word in
-                            Button {
-                                model.lookUp(word)
-                            } label: {
-                                Label(word, systemImage: "clock")
-                                    .foregroundStyle(.primary)
-                            }
+        if model.showRecentsOnHome && !model.recents.isEmpty {
+            List {
+                Section("Recent") {
+                    ForEach(model.recents.prefix(25), id: \.self) { word in
+                        Button {
+                            model.lookUp(word)
+                        } label: {
+                            Text(word)
                         }
+                        // Recents are a quiet backdrop to the search field, not
+                        // the point of the screen: smaller and grey rather than
+                        // full-size accent-coloured rows.
+                        .buttonStyle(.plain)
+                        .font(.roboto(15))
+                        .foregroundStyle(.secondary)
                     }
                 }
-                .listStyle(.insetGrouped)
             }
+            .listStyle(.insetGrouped)
+        } else {
+            emptyPage("Type a word to look up in\u{2026}")
         }
+    }
+
+    /// The macOS Dictionary app's empty page: no artwork, just the prompt and
+    /// the name of the dictionary being searched, centred and grey.
+    private func emptyPage(_ prompt: String) -> some View {
+        VStack(spacing: 22) {
+            Text(prompt)
+                .font(.roboto(15))
+            Text(model.activeDictionaryName)
+                .font(.roboto(19))
+        }
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 24)
+        .padding(.top, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     // MARK: Detail — the entry itself
@@ -167,11 +183,7 @@ struct ContentView: View {
                     }
                 }
         } else {
-            ContentUnavailableView(
-                "No Selection",
-                systemImage: "character.book.closed",
-                description: Text("Search for a word, or tap any word in an entry to look it up.")
-            )
+            emptyPage("Type a word to look up in\u{2026}")
         }
     }
 }

@@ -25,10 +25,10 @@ struct LookupResultView: View {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("No entries found for “\(term)”.")
-                        .font(.headline)
+                        .font(.roboto(17, weight: .medium))
                     if !suggestions.isEmpty {
                         Text("Did you mean:")
-                            .font(.subheadline)
+                            .font(.roboto(15))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -96,13 +96,13 @@ struct EntryScrollView: View {
     private func redirectNote(from: String) -> some View {
         (Text("“\(from)” is a form of ")
             + Text(entries.map(\.word).joined(separator: ", ")).italic())
-            .font(.subheadline)
+            .font(.roboto(15))
             .foregroundStyle(.secondary)
     }
 
     private var attributionFooter: some View {
         Text("WordNet 3.1 © Princeton University · Pronunciations from the CMU Pronouncing Dictionary")
-            .font(.caption2)
+            .font(.roboto(11))
             .foregroundStyle(.tertiary)
             .padding(.top, 12)
     }
@@ -142,11 +142,11 @@ struct EntryView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(entry.word)
-                .font(.system(size: 34 * scale, weight: .semibold, design: .serif))
+                .font(.roboto(34 * scale))
                 .textSelection(.enabled)
             if let pronunciation = entry.pronunciation {
                 Text("| \(pronunciation) |")
-                    .font(.system(size: 17 * scale))
+                    .font(.roboto(17 * scale))
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
             }
@@ -174,19 +174,19 @@ struct EntryView: View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             if numbered {
                 Text("\(sense.senseNumber)")
-                    .font(.system(size: 15 * scale, weight: .bold))
+                    .font(.roboto(15 * scale, weight: .bold))
                     .foregroundStyle(.secondary)
                     .frame(minWidth: 16 * scale, alignment: .trailing)
             }
             VStack(alignment: .leading, spacing: 5) {
                 Text(AttributedString.lookupText(sense.definition))
-                    .font(.system(size: 17 * scale))
+                    .font(.roboto(17 * scale))
                     .tint(.primary)
 
                 ForEach(Array(sense.examples.enumerated()), id: \.offset) { _, example in
                     (Text(": ").foregroundColor(.secondary)
                         + Text(AttributedString.lookupText(example, color: .secondary)))
-                        .font(.system(size: 16 * scale).italic())
+                        .font(.roboto(16 * scale, italic: true))
                         .tint(.secondary)
                 }
             }
@@ -217,25 +217,25 @@ struct EntryView: View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             if numbered {
                 Text("\(sense.senseNumber)")
-                    .font(.system(size: 15 * scale, weight: .bold))
+                    .font(.roboto(15 * scale, weight: .bold))
                     .foregroundStyle(.secondary)
                     .frame(minWidth: 16 * scale, alignment: .trailing)
             }
             VStack(alignment: .leading, spacing: 5) {
                 Text(sense.definition)
-                    .font(.system(size: 15 * scale))
+                    .font(.roboto(15 * scale))
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
                 if !sense.synonyms.isEmpty {
                     Text(AttributedString.lookupWordList(sense.synonyms, color: .accentColor))
-                        .font(.system(size: 17 * scale))
+                        .font(.roboto(17 * scale))
                 }
                 if !sense.antonyms.isEmpty {
                     (Text("antonyms: ")
-                        .font(.system(size: 15 * scale).italic())
+                        .font(.roboto(15 * scale, italic: true))
                         .foregroundColor(.secondary)
                         + Text(AttributedString.lookupWordList(sense.antonyms, color: .accentColor))
-                        .font(.system(size: 17 * scale)))
+                        .font(.roboto(17 * scale)))
                 }
             }
         }
@@ -245,7 +245,7 @@ struct EntryView: View {
 
     private func sourceHeader(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: 13 * scale, weight: .semibold))
+            .font(.roboto(13 * scale, weight: .medium))
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .kerning(0.8)
@@ -258,7 +258,7 @@ struct EntryView: View {
 
     private func partOfSpeechLabel(_ partOfSpeech: String) -> some View {
         Text(partOfSpeech)
-            .font(.system(size: 19 * scale, weight: .medium, design: .serif).italic())
+            .font(.roboto(19 * scale, weight: .medium, italic: true))
             .foregroundStyle(Color.accentColor)
     }
 }

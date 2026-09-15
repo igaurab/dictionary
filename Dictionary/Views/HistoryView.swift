@@ -9,11 +9,10 @@ struct HistoryView: View {
         NavigationStack {
             Group {
                 if model.recents.isEmpty {
-                    ContentUnavailableView(
-                        "No Recent Searches",
-                        systemImage: "clock",
-                        description: Text("Words you look up will appear here.")
-                    )
+                    Text("Words you look up will appear here.")
+                        .font(.roboto(15))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List {
                         ForEach(model.recents, id: \.self) { word in
