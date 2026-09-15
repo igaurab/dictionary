@@ -24,6 +24,9 @@ final class DictionaryLibrary: ObservableObject {
     /// 0...1 while an import runs, nil otherwise. Drives the Settings progress view.
     @Published private(set) var importProgress: Double?
 
+    /// 0...1 per catalogue id while that dictionary downloads.
+    @Published private(set) var downloadProgress: [String: Double] = [:]
+
     private var openStores: [UUID: ImportedDictionaryStore] = [:]
     private let defaults: UserDefaults
     private static let enabledDefaultsKey = "DictionaryLibrary.enabledIDs"
@@ -89,6 +92,101 @@ final class DictionaryLibrary: ObservableObject {
             importProgress = nil
             throw error
         }
+    }
+
+    // MARK: - Catalogue downloads
+
+    /// True once this catalogue entry's file is in the library. Matched on the
+    /// file name rather than the display name, which the reader can change.
+    func isInstalled(_ item: CatalogDictionary) -> Bool {
+        let fileName = DictionaryCatalog.fileName(for: item.id)
+        return installed.contains { $0.fileURL.lastPathComponent == fileName }
+    }
+
+    func isDownloading(_ item: CatalogDictionary) -> Bool {
+        downloadProgress[item.id] != nil
+    }
+
+    /// Fetches a catalogue dictionary and installs it, ready to search.
+    ///
+    /// The asset is already in the app's SQLite format, so it skips the
+    /// StarDict importer entirely — download, inflate if gzipped, validate,
+    /// move into place.
+    func download(_ item: CatalogDictionary) async throws {
+        guard !isInstalled(item), downloadProgress[item.id] == nil else { return }
+        downloadProgress[item.id] = 0
+
+        // Anything that leaves early must clear the progress row, or the row in
+        // Settings is stuck on a spinner for the life of the process.
+        defer { downloadProgress[item.id] = nil }
+
+        let id = item.id
+        let report: @Sendable (Double) -> Void = { [weak self] fraction in
+            Task { @MainActor in
+                // The last tenth is the local install, which has no progress of
+                // its own but is not instant for a hundred-megabyte file.
+                self?.downloadProgress[id] = min(fraction, 1) * 0.9
+            }
+        }
+
+        let downloaded = try await FileDownloader.download(
+            from: item.url, expectedBytes: item.downloadBytes, progress: report)
+        defer { try? FileManager.default.removeItem(at: downloaded) }
+
+        downloadProgress[item.id] = 0.9
+        let destination = Self.storageDirectory
+            .appendingPathComponent(DictionaryCatalog.fileName(for: item.id))
+
+        let summary = try await Task.detached(priority: .userInitiated) {
+            try Self.installPreconverted(from: downloaded, at: destination)
+        }.value
+
+        let dictionary = InstalledDictionary(
+            name: summary.bookname,
+            language: summary.language ?? item.language,
+            wordCount: summary.entryCount,
+            fileURL: destination)
+
+        // Re-downloading replaces the file in place, so any store still open on
+        // the old copy has to be dropped or it keeps answering from stale pages.
+        for stale in installed
+        where stale.fileURL.lastPathComponent == destination.lastPathComponent {
+            openStores[stale.id] = nil
+            enabledIDs.remove(stale.id)
+        }
+        installed.removeAll { $0.fileURL.lastPathComponent == destination.lastPathComponent }
+
+        installed.append(dictionary)
+        installed.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        // Newly installed dictionaries search immediately, like an import.
+        enabledIDs.insert(dictionary.id)
+        saveManifest()
+    }
+
+    /// Inflates `source` if needed, checks it really is a dictionary, and puts
+    /// it at `destination`. Nothing is written to the library until it passes.
+    nonisolated static func installPreconverted(from source: URL,
+                                                at destination: URL) throws -> PreconvertedDictionary.Summary {
+        let fileManager = FileManager.default
+        try fileManager.createDirectory(at: destination.deletingLastPathComponent(),
+                                        withIntermediateDirectories: true)
+
+        let staged = destination.deletingLastPathComponent()
+            .appendingPathComponent("staging-\(UUID().uuidString).sqlite")
+        defer { try? fileManager.removeItem(at: staged) }
+
+        if GzipFile.isGzip(source) {
+            try GzipFile.decompress(from: source, to: staged)
+        } else {
+            try? fileManager.removeItem(at: staged)
+            try fileManager.copyItem(at: source, to: staged)
+        }
+
+        let summary = try PreconvertedDictionary.validate(at: staged)
+
+        try? fileManager.removeItem(at: destination)
+        try fileManager.moveItem(at: staged, to: destination)
+        return summary
     }
 
     func remove(_ dictionary: InstalledDictionary) {

@@ -22,6 +22,17 @@ struct DictionariesSettingsView: View {
                         .font(.roboto(15))
                 }
 
+                Section {
+                    ForEach(DictionaryCatalog.entries) { item in
+                        downloadRow(for: item)
+                    }
+                } header: {
+                    Text("Download")
+                } footer: {
+                    Text("Downloaded dictionaries are stored on this device and work offline. They are not part of the app, so they can be removed at any time.")
+                        .font(.roboto(13))
+                }
+
                 Section("Imported") {
                     if library.installed.isEmpty {
                         Text("No dictionaries imported yet.")
@@ -78,12 +89,77 @@ struct DictionariesSettingsView: View {
                     }
                 }
             }
-            .alert("Could Not Import", isPresented: .constant(importError != nil)) {
+            .alert("Could Not Add Dictionary", isPresented: .constant(importError != nil)) {
                 Button("OK") { importError = nil }
             } message: {
                 Text(importError ?? "")
             }
         }
+    }
+
+    // MARK: - Download catalogue
+
+    @ViewBuilder
+    private func downloadRow(for item: CatalogDictionary) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.name)
+                        .font(.roboto(15))
+                    Text(catalogSubtitle(for: item))
+                        .font(.roboto(13))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 12)
+
+                if library.isInstalled(item) {
+                    Text("Installed")
+                        .font(.roboto(13))
+                        .foregroundStyle(.secondary)
+                } else if library.isDownloading(item) {
+                    // Cancelling mid-download is not supported, so the button is
+                    // replaced rather than disabled in place.
+                    EmptyView()
+                } else {
+                    Button("Download") { start(item) }
+                        .font(.roboto(15))
+                        .buttonStyle(.borderless)
+                }
+            }
+
+            Text(item.summary)
+                .font(.roboto(13))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let progress = library.downloadProgress[item.id] {
+                ProgressView(value: progress) {
+                    Text(progress < 0.9 ? "Downloading\u{2026}" : "Installing\u{2026}")
+                        .font(.roboto(13))
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func start(_ item: CatalogDictionary) {
+        Task {
+            do {
+                try await library.download(item)
+            } catch {
+                importError = error.localizedDescription
+            }
+        }
+    }
+
+    private func catalogSubtitle(for item: CatalogDictionary) -> String {
+        let words = item.entryCount.formatted(.number.grouping(.automatic))
+        let size = ByteCountFormatter.string(fromByteCount: item.downloadBytes,
+                                             countStyle: .file)
+        let separator = " \u{00B7} "
+        return [item.language, "\(words) words", size, item.licence]
+            .joined(separator: separator)
     }
 
     private func row(for dictionary: InstalledDictionary) -> some View {
