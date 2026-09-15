@@ -8,6 +8,8 @@ struct SettingsView: View {
     /// Mirrors SpotlightIndexer's own default so the toggle reads correctly
     /// before the indexer has ever run.
     @AppStorage("spotlightIndexingEnabled") private var spotlightEnabled = true
+    @EnvironmentObject private var library: DictionaryLibrary
+    @State private var showingDictionaries = false
 
     var body: some View {
         NavigationStack {
@@ -28,6 +30,19 @@ struct SettingsView: View {
                         model.textScale = 1.0
                     }
                     .disabled(model.textScale == 1.0)
+                }
+
+                Section("Dictionaries") {
+                    Button {
+                        showingDictionaries = true
+                    } label: {
+                        LabeledContent("Dictionaries") {
+                            Text(library.installed.isEmpty
+                                 ? "WordNet 3.1"
+                                 : "\(library.installed.count + 1) installed")
+                        }
+                    }
+                    .tint(.primary)
                 }
 
                 Section("Spotlight") {
@@ -56,6 +71,9 @@ struct SettingsView: View {
                         .font(.roboto(13))
                         .foregroundStyle(.secondary)
                 }
+            }
+            .sheet(isPresented: $showingDictionaries) {
+                DictionariesSettingsView()
             }
             .onChange(of: spotlightEnabled) { _, isOn in
                 // AppStorage has already written the flag; this kicks off the

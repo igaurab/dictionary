@@ -1,11 +1,11 @@
 import SwiftUI
 
-/// The save control for the word on screen.
+/// The save control for the word on screen, sitting in the entry's toolbar
+/// beside the Back / Forward chevrons.
 ///
-/// It lives in the entry's toolbar beside the Back / Forward chevrons rather
-/// than floating over the text: the search field now sits in the bottom bar, and
-/// anything pinned to the bottom-trailing corner would collide with it. The
-/// heart is the one place the accent colour is allowed to appear in an entry.
+/// It reads as part of the entry's controls rather than floating over the
+/// definition text. The heart is the one place the accent colour is allowed to
+/// appear in an entry.
 struct FavoriteButton: View {
     let word: String
 

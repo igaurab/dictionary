@@ -5,6 +5,7 @@ import CoreSpotlight
 struct DictionaryApp: App {
     @StateObject private var model = DictionaryViewModel()
     @StateObject private var favorites = FavoritesStore()
+    @StateObject private var library = DictionaryLibrary.shared
 
     init() {
         AppFonts.register()
@@ -15,6 +16,7 @@ struct DictionaryApp: App {
             ContentView()
                 .environmentObject(model)
                 .environmentObject(favorites)
+                .environmentObject(library)
                 .task {
                     // Utility priority and detached: building the index must
                     // never make the first search feel slow.
