@@ -75,9 +75,11 @@ struct ContentView: View {
             }
         }
         .navigationTitle("Dictionary")
+        // .toolbar puts the field in the bottom bar on iPhone, within thumb
+        // reach, the way the iOS 26 system apps place search.
         .searchable(
             text: $model.searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
+            placement: .toolbar,
             prompt: "Search"
         )
         .autocorrectionDisabled()
