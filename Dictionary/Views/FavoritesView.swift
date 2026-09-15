@@ -1,23 +1,34 @@
 import SwiftUI
 
-/// Recent lookups, like the search history in the macOS Dictionary app.
-struct HistoryView: View {
-    @EnvironmentObject private var model: DictionaryViewModel
+/// Saved words, presented as a sheet alongside Recent Searches.
+///
+/// The word list is the whole screen: no icons, no counts, no artwork — the
+/// same restraint as `HistoryView`.
+struct FavoritesView: View {
+    /// The sheet doesn't own a `DictionaryViewModel`; the presenter decides what
+    /// looking a word up means (and usually dismisses the sheet first).
+    private let onSelect: (String) -> Void
+
+    @EnvironmentObject private var favorites: FavoritesStore
     @Environment(\.dismiss) private var dismiss
+
+    init(onSelect: @escaping (String) -> Void) {
+        self.onSelect = onSelect
+    }
 
     var body: some View {
         NavigationStack {
             Group {
-                if model.recents.isEmpty {
-                    Text("Words you look up will appear here.")
+                if favorites.words.isEmpty {
+                    Text("Words you save will appear here.")
                         .font(.roboto(15))
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List {
-                        ForEach(model.recents, id: \.self) { word in
+                        ForEach(favorites.words, id: \.self) { word in
                             Button {
-                                model.lookUp(word)
+                                onSelect(word)
                                 dismiss()
                             } label: {
                                 Text(word)
@@ -25,19 +36,19 @@ struct HistoryView: View {
                             }
                         }
                         .onDelete { offsets in
-                            model.recents.remove(atOffsets: offsets)
+                            favorites.remove(atOffsets: offsets)
                         }
                     }
                 }
             }
-            .navigationTitle("Recent Searches")
+            .navigationTitle("Saved Words")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Clear", role: .destructive) {
-                        model.clearRecents()
+                        favorites.removeAll()
                     }
-                    .disabled(model.recents.isEmpty)
+                    .disabled(favorites.words.isEmpty)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
@@ -48,6 +59,6 @@ struct HistoryView: View {
 }
 
 #Preview {
-    HistoryView()
-        .environmentObject(DictionaryViewModel())
+    FavoritesView { _ in }
+        .environmentObject(FavoritesStore())
 }

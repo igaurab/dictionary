@@ -16,7 +16,13 @@ struct LookupResultView: View {
             EntryScrollView(entries: entries, redirectedFrom: from)
 
         case .notFound(let suggestions):
-            noEntryView(suggestions: suggestions)
+            if model.importedEntries.isEmpty {
+                noEntryView(suggestions: suggestions)
+            } else {
+                // WordNet doesn't have it, but an imported dictionary does -
+                // the usual case for a word in another language.
+                EntryScrollView(entries: [], redirectedFrom: nil)
+            }
         }
     }
 
@@ -25,10 +31,10 @@ struct LookupResultView: View {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("No entries found for “\(term)”.")
-                        .font(.headline)
+                        .font(.roboto(17, weight: .medium))
                     if !suggestions.isEmpty {
                         Text("Did you mean:")
-                            .font(.subheadline)
+                            .font(.roboto(15))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -59,14 +65,7 @@ struct EntryScrollView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("Source", selection: $model.source) {
-                ForEach(DictionarySource.allCases) { source in
-                    Text(source.rawValue).tag(source)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            SourceBar()
 
             Divider()
 
@@ -75,11 +74,19 @@ struct EntryScrollView: View {
                     if let from = redirectedFrom {
                         redirectNote(from: from)
                     }
-                    ForEach(entries) { entry in
-                        EntryView(entry: entry, source: model.source)
-                        if entry.id != entries.last?.id {
+                    if model.source.showsWordNet {
+                        ForEach(entries) { entry in
+                            EntryView(entry: entry, source: model.source)
+                            if entry.id != entries.last?.id {
+                                Divider()
+                            }
+                        }
+                    }
+                    ForEach(shownImported) { imported in
+                        if showsWordNetContent || imported != shownImported.first {
                             Divider()
                         }
+                        importedSection(imported)
                     }
                     attributionFooter
                 }
@@ -90,21 +97,58 @@ struct EntryScrollView: View {
             }
         }
         .background(Color(.systemBackground))
-        .navigationTitle(entries.first?.word ?? "")
+        .navigationTitle(entries.first?.word ?? model.currentTerm ?? "")
+    }
+
+    /// The imported dictionaries the selected source lets through.
+    private var shownImported: [ImportedDefinition] {
+        model.importedEntries.filter { model.source.shows(importedName: $0.dictionaryName) }
+    }
+
+    /// Whether anything from WordNet is actually on screen above the imported
+    /// sections, which decides who draws the headword and the divider.
+    private var showsWordNetContent: Bool {
+        model.source.showsWordNet && !entries.isEmpty
+    }
+
+    /// An imported dictionary's text for the word. StarDict entries are free
+    /// text rather than structured senses, so they are shown as a block under
+    /// the dictionary's own name.
+    @ViewBuilder
+    private func importedSection(_ imported: ImportedDefinition) -> some View {
+        let scale = CGFloat(model.textScale)
+        VStack(alignment: .leading, spacing: 10) {
+            if !showsWordNetContent && imported == shownImported.first {
+                Text(model.currentTerm ?? "")
+                    .font(.roboto(34 * scale))
+            }
+            Text(imported.dictionaryName.uppercased())
+                .font(.roboto(13 * scale, weight: .medium))
+                .foregroundStyle(.secondary)
+            Divider()
+            Text(.lookupText(imported.definition))
+                .font(.roboto(17 * scale))
+                .textSelection(.enabled)
+        }
     }
 
     private func redirectNote(from: String) -> some View {
         (Text("“\(from)” is a form of ")
             + Text(entries.map(\.word).joined(separator: ", ")).italic())
-            .font(.subheadline)
+            .font(.roboto(15))
             .foregroundStyle(.secondary)
     }
 
+    /// Only credit WordNet when WordNet actually supplied something: an entry
+    /// that came entirely from an imported dictionary is not theirs.
+    @ViewBuilder
     private var attributionFooter: some View {
-        Text("WordNet 3.1 © Princeton University · Pronunciations from the CMU Pronouncing Dictionary")
-            .font(.caption2)
-            .foregroundStyle(.tertiary)
-            .padding(.top, 12)
+        if showsWordNetContent {
+            Text("WordNet 3.1 © Princeton University · Pronunciations from the CMU Pronouncing Dictionary")
+                .font(.roboto(11))
+                .foregroundStyle(.tertiary)
+                .padding(.top, 12)
+        }
     }
 }
 
@@ -142,11 +186,11 @@ struct EntryView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(entry.word)
-                .font(.system(size: 34 * scale, weight: .semibold, design: .serif))
+                .font(.roboto(34 * scale))
                 .textSelection(.enabled)
             if let pronunciation = entry.pronunciation {
                 Text("| \(pronunciation) |")
-                    .font(.system(size: 17 * scale))
+                    .font(.roboto(17 * scale))
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
             }
@@ -174,19 +218,19 @@ struct EntryView: View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             if numbered {
                 Text("\(sense.senseNumber)")
-                    .font(.system(size: 15 * scale, weight: .bold))
+                    .font(.roboto(15 * scale, weight: .bold))
                     .foregroundStyle(.secondary)
                     .frame(minWidth: 16 * scale, alignment: .trailing)
             }
             VStack(alignment: .leading, spacing: 5) {
                 Text(AttributedString.lookupText(sense.definition))
-                    .font(.system(size: 17 * scale))
+                    .font(.roboto(17 * scale))
                     .tint(.primary)
 
                 ForEach(Array(sense.examples.enumerated()), id: \.offset) { _, example in
                     (Text(": ").foregroundColor(.secondary)
                         + Text(AttributedString.lookupText(example, color: .secondary)))
-                        .font(.system(size: 16 * scale).italic())
+                        .font(.roboto(16 * scale, italic: true))
                         .tint(.secondary)
                 }
             }
@@ -217,25 +261,25 @@ struct EntryView: View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             if numbered {
                 Text("\(sense.senseNumber)")
-                    .font(.system(size: 15 * scale, weight: .bold))
+                    .font(.roboto(15 * scale, weight: .bold))
                     .foregroundStyle(.secondary)
                     .frame(minWidth: 16 * scale, alignment: .trailing)
             }
             VStack(alignment: .leading, spacing: 5) {
                 Text(sense.definition)
-                    .font(.system(size: 15 * scale))
+                    .font(.roboto(15 * scale))
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
                 if !sense.synonyms.isEmpty {
                     Text(AttributedString.lookupWordList(sense.synonyms, color: .accentColor))
-                        .font(.system(size: 17 * scale))
+                        .font(.roboto(17 * scale))
                 }
                 if !sense.antonyms.isEmpty {
                     (Text("antonyms: ")
-                        .font(.system(size: 15 * scale).italic())
+                        .font(.roboto(15 * scale, italic: true))
                         .foregroundColor(.secondary)
                         + Text(AttributedString.lookupWordList(sense.antonyms, color: .accentColor))
-                        .font(.system(size: 17 * scale)))
+                        .font(.roboto(17 * scale)))
                 }
             }
         }
@@ -245,7 +289,7 @@ struct EntryView: View {
 
     private func sourceHeader(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: 13 * scale, weight: .semibold))
+            .font(.roboto(13 * scale, weight: .medium))
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .kerning(0.8)
@@ -258,7 +302,7 @@ struct EntryView: View {
 
     private func partOfSpeechLabel(_ partOfSpeech: String) -> some View {
         Text(partOfSpeech)
-            .font(.system(size: 19 * scale, weight: .medium, design: .serif).italic())
+            .font(.roboto(19 * scale, weight: .medium, italic: true))
             .foregroundStyle(Color.accentColor)
     }
 }
