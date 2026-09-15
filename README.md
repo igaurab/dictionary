@@ -84,6 +84,16 @@ Dictionaries screen as well as here.
 - **Recent searches** — a persistent history list with swipe-to-delete.
 - **Text size control** — the equivalent of ⌘+/⌘− zoom on macOS.
 - **Random word** — for browsing and discovery.
+- **Browse A to Z** — leaf through any dictionary like a printed one, with a
+  letter index down the side (A–Z, or अ–ह for Hindi and Nepali). Accents are
+  ignored the way printed dictionaries ignore them ("école" files under E),
+  and inflected forms are left out. The sorted word list is built once per
+  dictionary on the device and loaded a page at a time.
+- **Flashcards from several dictionaries** — pick any mix of English and the
+  downloaded languages for random decks.
+- **Pronunciation** — a speaker button reads English headwords aloud with an
+  on-device iOS voice. Better Enhanced and Premium voices are a free download
+  in the Settings app and work offline.
 - **iPad support** — a two-column split view that mirrors the macOS
   sidebar-plus-entry layout; on iPhone it collapses to a stack.
 
@@ -96,6 +106,18 @@ Dictionaries screen as well as here.
 2. Select the `Dictionary` scheme and an iOS 17+ simulator or device.
 3. Build and run. No dependencies, no packages — just SwiftUI and the
    system SQLite3 library.
+
+## Testing
+
+UI tests in `DictionaryUITests/` drive the app in the simulator: browsing
+English and Nepali, downloading a dictionary, mixed flashcards, and
+pronunciation. Start from a fresh install, since one test downloads Nepali:
+
+```sh
+xcrun simctl uninstall booted com.igaurab.Dictionary
+xcodebuild test -project Dictionary.xcodeproj -scheme Dictionary \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+```
 
 ## Regenerating the database
 
