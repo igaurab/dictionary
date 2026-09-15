@@ -88,6 +88,23 @@ final class ImportedDictionaryStore {
         return unique.joined(separator: "\n\n")
     }
 
+    /// A random row, for flashcards. Seeks to a random row id instead of
+    /// `ORDER BY RANDOM()`, which would sort two million rows for every card.
+    func randomEntry() -> (word: String, definition: String)? {
+        guard let last = queryStrings("SELECT max(id) FROM entries", bindings: [])
+            .first.flatMap(Int64.init), last > 0 else { return nil }
+        let target = Int64.random(in: 1...last)
+
+        var statement: OpaquePointer?
+        defer { sqlite3_finalize(statement) }
+        let sql = "SELECT word, definition FROM entries WHERE id >= \(target) ORDER BY id LIMIT 1"
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK,
+              sqlite3_step(statement) == SQLITE_ROW,
+              let word = sqlite3_column_text(statement, 0),
+              let definition = sqlite3_column_text(statement, 1) else { return nil }
+        return (String(cString: word), String(cString: definition))
+    }
+
     func contains(_ word: String) -> Bool {
         let term = normalized(word)
         guard !term.isEmpty else { return false }

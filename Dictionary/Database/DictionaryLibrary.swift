@@ -154,6 +154,7 @@ final class DictionaryLibrary: ObservableObject {
             openStores[stale.id] = nil
             enabledIDs.remove(stale.id)
         }
+        BrowseIndexStore.shared.discardIndex(forLexiconID: destination.lastPathComponent)
         installed.removeAll { $0.fileURL.lastPathComponent == destination.lastPathComponent }
 
         installed.append(dictionary)
@@ -193,6 +194,7 @@ final class DictionaryLibrary: ObservableObject {
         installed.removeAll { $0.id == dictionary.id }
         enabledIDs.remove(dictionary.id)
         openStores[dictionary.id] = nil
+        BrowseIndexStore.shared.discardIndex(forLexiconID: Lexicon.installed(dictionary).id)
         try? FileManager.default.removeItem(at: dictionary.fileURL)
         saveManifest()
     }

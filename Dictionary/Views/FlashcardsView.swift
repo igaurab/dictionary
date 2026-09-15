@@ -6,6 +6,7 @@ import SwiftUI
 /// panel, and the only motion is the flip itself.
 struct FlashcardsView: View {
     @StateObject private var deck: FlashcardDeck
+    @EnvironmentObject private var library: DictionaryLibrary
     @Environment(\.dismiss) private var dismiss
 
     /// `words` is the reader's own vocabulary for `.recents`, and ignored for
@@ -28,6 +29,11 @@ struct FlashcardsView: View {
                     finishedScreen
                 }
             }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if deck.source == .random && library.lexicons.count > 1 {
+                    dictionaryChips
+                }
+            }
             .navigationTitle(deck.source.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -36,6 +42,44 @@ struct FlashcardsView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Dictionaries
+
+    /// Which dictionaries a random deck draws from, as toggles in the style of
+    /// the source bar. Tapping one deals a fresh deck.
+    private var dictionaryChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(library.lexicons) { lexicon in
+                    let selected = deck.lexicons.contains(lexicon)
+                    Button {
+                        deck.toggle(lexicon)
+                    } label: {
+                        Label(lexicon.label, systemImage: selected ? "checkmark" : "plus")
+                            .labelStyle(ChipLabelStyle())
+                            .font(.roboto(15, weight: selected ? .medium : .regular))
+                            .foregroundStyle(selected ? Color.primary : Color.secondary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(
+                                Capsule().fill(selected
+                                               ? Color(.secondarySystemBackground)
+                                               : Color.clear)
+                            )
+                            .overlay(
+                                Capsule().strokeBorder(Color.secondary.opacity(selected ? 0 : 0.35))
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(selected ? .isSelected : [])
+                    .accessibilityIdentifier("flashcards.dictionary.\(lexicon.label)")
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 8)
+        }
+        .background(Color(.systemBackground))
     }
 
     // MARK: - Screens
@@ -160,13 +204,25 @@ struct FlashcardsView: View {
             .multilineTextAlignment(.center)
             .minimumScaleFactor(0.5)
             .padding(24)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay(alignment: .top) {
+                if deck.showsDictionary {
+                    Text(card.dictionary.uppercased())
+                        .font(.roboto(12, weight: .medium))
+                        .kerning(0.6)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 14)
+                }
+            }
     }
 
     private func back(_ card: Flashcard) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(card.partOfSpeech)
-                .font(.roboto(14, italic: true))
-                .foregroundStyle(.secondary)
+            if !card.partOfSpeech.isEmpty {
+                Text(card.partOfSpeech)
+                    .font(.roboto(14, italic: true))
+                    .foregroundStyle(.secondary)
+            }
             Text(card.definition)
                 .font(.roboto(20))
                 .fixedSize(horizontal: false, vertical: true)
@@ -190,4 +246,16 @@ struct FlashcardsView: View {
 
 #Preview("Random") {
     FlashcardsView(source: .random)
+        .environmentObject(DictionaryLibrary.shared)
+}
+
+/// Icon then title, tight, for the dictionary chips.
+private struct ChipLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 5) {
+            configuration.icon
+                .font(.system(size: 11, weight: .semibold))
+            configuration.title
+        }
+    }
 }

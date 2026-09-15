@@ -116,6 +116,7 @@ struct DictionariesSettingsView: View {
                     Text("Installed")
                         .font(.roboto(13))
                         .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("installed.\(item.id)")
                 } else if library.isDownloading(item) {
                     // Cancelling mid-download is not supported, so the button is
                     // replaced rather than disabled in place.
@@ -124,6 +125,7 @@ struct DictionariesSettingsView: View {
                     Button("Download") { start(item) }
                         .font(.roboto(15))
                         .buttonStyle(.borderless)
+                        .accessibilityIdentifier("download.\(item.id)")
                 }
             }
 

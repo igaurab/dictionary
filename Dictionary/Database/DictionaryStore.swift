@@ -114,9 +114,15 @@ final class DictionaryStore {
                          senses: senses(forWordID: id))
     }
 
-    /// A random headword, for the "random word" discovery feature.
+    /// A random headword, for the "random word" discovery feature. Seeks to a
+    /// random id rather than sorting the whole table with `ORDER BY RANDOM()`,
+    /// which a twenty-card deck would otherwise do twenty times.
     func randomWord() -> String? {
-        queryStrings("SELECT word FROM words ORDER BY RANDOM() LIMIT 1", bindings: []).first
+        queryStrings("""
+            SELECT word FROM words
+            WHERE id >= (SELECT abs(random()) % max(id) + 1 FROM words)
+            ORDER BY id LIMIT 1
+            """, bindings: []).first
     }
 
     // MARK: - Private

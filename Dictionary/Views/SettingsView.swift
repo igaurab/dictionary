@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 
 /// Text size and about screen — the equivalent of Dictionary > Settings
@@ -10,6 +11,8 @@ struct SettingsView: View {
     @AppStorage("spotlightIndexingEnabled") private var spotlightEnabled = true
     @EnvironmentObject private var library: DictionaryLibrary
     @State private var showingDictionaries = false
+    @AppStorage(Pronouncer.voiceDefaultsKey) private var voiceID = ""
+    @State private var voices: [AVSpeechSynthesisVoice] = []
 
     var body: some View {
         NavigationStack {
@@ -45,6 +48,22 @@ struct SettingsView: View {
                     .tint(.primary)
                 }
 
+                Section("Pronunciation") {
+                    Picker("Voice", selection: $voiceID) {
+                        Text("Best Available").tag("")
+                        ForEach(voices, id: \.identifier) { voice in
+                            Text("\(voice.name) (\(voice.language), \(Pronouncer.qualityName(voice)))")
+                                .tag(voice.identifier)
+                        }
+                    }
+                    Button("Play Sample") {
+                        Pronouncer.shared.speak("dictionary")
+                    }
+                    Text("Words are read by a voice stored on this iPhone, so pronunciation works offline. For a more natural voice, open the Settings app, search for \u{201C}Voices\u{201D}, pick English, and download an Enhanced or Premium voice. It appears here once downloaded.")
+                        .font(.roboto(13))
+                        .foregroundStyle(.secondary)
+                }
+
                 Section("Spotlight") {
                     Toggle("Look Up from Home Screen", isOn: $spotlightEnabled)
                     Text("Adds every word to iPhone search, so swiping down on the home screen and typing a word shows its definition. Indexing 147,478 words takes a minute the first time.")
@@ -74,6 +93,11 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingDictionaries) {
                 DictionariesSettingsView()
+            }
+            .onAppear {
+                // Re-read on every visit: the reader may have just downloaded a
+                // voice in the Settings app.
+                voices = Pronouncer.englishVoices
             }
             .onChange(of: spotlightEnabled) { _, isOn in
                 // AppStorage has already written the flag; this kicks off the

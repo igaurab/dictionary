@@ -30,6 +30,13 @@
 			remoteGlobalIDString = BB5000000000000000000001;
 			remoteInfo = DictionaryWidget;
 		};
+		CCE000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA9000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA5000000000000000000001;
+			remoteInfo = Dictionary;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,7 +55,6 @@
 
 /* Begin PBXFileReference section */
 		AA2000000000000000000001 /* Dictionary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dictionary.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB2000000000000000000001 /* DictionaryWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DictionaryWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB1000000000000000000001 /* DictionaryWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryWidgetBundle.swift; sourceTree = "<group>"; };
 		BB1000000000000000000002 /* WordOfTheDayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOfTheDayWidget.swift; sourceTree = "<group>"; };
 		BB1000000000000000000003 /* SearchWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchWidget.swift; sourceTree = "<group>"; };
@@ -63,12 +69,19 @@
 		BB1100000000000000000006 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-BoldItalic.ttf"; path = "Dictionary/Resources/Fonts/Roboto-BoldItalic.ttf"; sourceTree = SOURCE_ROOT; };
 		BB1200000000000000000001 /* Dictionary-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Dictionary-Info.plist"; sourceTree = "<group>"; };
 		BB1200000000000000000002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB2000000000000000000001 /* DictionaryWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DictionaryWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC2000000000000000000001 /* DictionaryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DictionaryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AA1000000000000000000001 /* Dictionary */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Dictionary;
+			sourceTree = "<group>";
+		};
+		CC1000000000000000000001 /* DictionaryUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DictionaryUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,6 +101,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CC3000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -96,6 +116,7 @@
 			children = (
 				AA1000000000000000000001 /* Dictionary */,
 				BB4000000000000000000001 /* DictionaryWidget */,
+				CC1000000000000000000001 /* DictionaryUITests */,
 				BB4000000000000000000003 /* Supporting */,
 				AA4000000000000000000002 /* Products */,
 			);
@@ -106,6 +127,7 @@
 			children = (
 				AA2000000000000000000001 /* Dictionary.app */,
 				BB2000000000000000000001 /* DictionaryWidget.appex */,
+				CC2000000000000000000001 /* DictionaryUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -192,6 +214,29 @@
 			productReference = BB2000000000000000000001 /* DictionaryWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		CC5000000000000000000001 /* DictionaryUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC6000000000000000000001 /* Build configuration list for PBXNativeTarget "DictionaryUITests" */;
+			buildPhases = (
+				CC7000000000000000000001 /* Sources */,
+				CC3000000000000000000001 /* Frameworks */,
+				CC8000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CCD000000000000000000001 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CC1000000000000000000001 /* DictionaryUITests */,
+			);
+			name = DictionaryUITests;
+			packageProductDependencies = (
+			);
+			productName = DictionaryUITests;
+			productReference = CC2000000000000000000001 /* DictionaryUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -207,6 +252,10 @@
 					};
 					BB5000000000000000000001 = {
 						CreatedOnToolsVersion = 26.6;
+					};
+					CC5000000000000000000001 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = AA5000000000000000000001;
 					};
 				};
 			};
@@ -226,6 +275,7 @@
 			targets = (
 				AA5000000000000000000001 /* Dictionary */,
 				BB5000000000000000000001 /* DictionaryWidget */,
+				CC5000000000000000000001 /* DictionaryUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -248,6 +298,13 @@
 				BB0200000000000000000004 /* Roboto-Bold.ttf in Resources */,
 				BB0200000000000000000005 /* Roboto-Italic.ttf in Resources */,
 				BB0200000000000000000006 /* Roboto-BoldItalic.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CC8000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +331,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CC7000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -281,6 +345,11 @@
 			isa = PBXTargetDependency;
 			target = BB5000000000000000000001 /* DictionaryWidget */;
 			targetProxy = BBE000000000000000000001 /* PBXContainerItemProxy */;
+		};
+		CCD000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA5000000000000000000001 /* Dictionary */;
+			targetProxy = CCE000000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -472,8 +541,8 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
 				INFOPLIST_FILE = DictionaryWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -498,8 +567,8 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
 				INFOPLIST_FILE = DictionaryWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -513,6 +582,40 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CCA000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.igaurab.DictionaryUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Dictionary;
+			};
+			name = Debug;
+		};
+		CCA000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.igaurab.DictionaryUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Dictionary;
 			};
 			name = Release;
 		};
@@ -542,6 +645,15 @@
 			buildConfigurations = (
 				BBA000000000000000000001 /* Debug */,
 				BBA000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CC6000000000000000000001 /* Build configuration list for PBXNativeTarget "DictionaryUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CCA000000000000000000001 /* Debug */,
+				CCA000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -165,6 +165,19 @@ final class DictionaryViewModel: ObservableObject {
         performLookup(trimmed)
     }
 
+    /// Looks a word up and, when it came from a particular dictionary, opens
+    /// the entry on that dictionary's tab - a Nepali word picked while browsing
+    /// Nepali should not open on the English definition of the same spelling.
+    func lookUp(_ term: String, from lexicon: Lexicon) {
+        lookUp(term)
+        guard case .installed(let dictionary) = lexicon,
+              let tab = availableSources.first(where: {
+                  if case .imported(let name, _) = $0 { return name == dictionary.name }
+                  return false
+              }) else { return }
+        source = tab
+    }
+
     func goBack() {
         guard let previous = backStack.popLast() else { return }
         if let current = currentTerm { forwardStack.append(current) }

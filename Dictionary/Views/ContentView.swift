@@ -9,6 +9,7 @@ struct ContentView: View {
     @State private var showingQuiz = false
     @State private var showingFlashcards = false
     @State private var showingRandomFlashcards = false
+    @State private var showingBrowse = false
     @State private var showingSettings = false
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
@@ -44,13 +45,7 @@ struct ContentView: View {
                 }
             }
         }
-        .environment(\.openURL, OpenURLAction { url in
-            if let word = LookupLink.word(from: url) {
-                model.lookUp(word)
-                return .handled
-            }
-            return .systemAction
-        })
+        .handlesLookupLinks(model)
         .sheet(isPresented: $showingHistory) {
             HistoryView()
         }
@@ -66,6 +61,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingRandomFlashcards) {
             FlashcardsView(source: .random)
+        }
+        .sheet(isPresented: $showingBrowse) {
+            BrowseView()
         }
         .sheet(isPresented: $showingQuiz) {
             // Quizzing on words you actually looked up is the point; favourites
@@ -108,6 +106,11 @@ struct ContentView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button {
+                        showingBrowse = true
+                    } label: {
+                        Label("Browse", systemImage: "character.book.closed")
+                    }
+                    Button {
                         showingHistory = true
                     } label: {
                         Label("Recent Searches", systemImage: "clock")
@@ -147,34 +150,8 @@ struct ContentView: View {
 
     // MARK: Detail — the entry itself
 
-    @ViewBuilder
     private var detail: some View {
-        if let lookup = model.currentLookup, let term = model.currentTerm {
-            LookupResultView(term: term, result: lookup)
-                .id(term)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItemGroup(placement: .topBarTrailing) {
-                        FavoriteButton(word: term)
-
-                        Button {
-                            model.goBack()
-                        } label: {
-                            Label("Back", systemImage: "chevron.backward")
-                        }
-                        .disabled(!model.canGoBack)
-
-                        Button {
-                            model.goForward()
-                        } label: {
-                            Label("Forward", systemImage: "chevron.forward")
-                        }
-                        .disabled(!model.canGoForward)
-                    }
-                }
-        } else {
-            EmptyPage(prompt: "Type a word to look up in\u{2026}")
-        }
+        EntryPage()
     }
 }
 

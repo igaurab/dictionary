@@ -188,11 +188,16 @@ struct EntryView: View {
             Text(entry.word)
                 .font(.roboto(34 * scale))
                 .textSelection(.enabled)
-            if let pronunciation = entry.pronunciation {
-                Text("| \(pronunciation) |")
-                    .font(.roboto(17 * scale))
-                    .foregroundStyle(.secondary)
-                    .textSelection(.enabled)
+            HStack(alignment: .center, spacing: 6) {
+                if let pronunciation = entry.pronunciation {
+                    Text("| \(pronunciation) |")
+                        .font(.roboto(17 * scale))
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                }
+                // WordNet is English, so every entry here can be read aloud.
+                PronounceButton(word: entry.word, size: 17 * scale)
+                    .foregroundStyle(Color.accentColor)
             }
         }
     }
