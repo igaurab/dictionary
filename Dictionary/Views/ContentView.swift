@@ -85,6 +85,7 @@ struct ContentView: View {
         // reach, the way the iOS 26 system apps place search.
         .searchable(
             text: $model.searchText,
+            isPresented: $model.isSearchPresented,
             placement: .toolbar,
             prompt: "Search"
         )

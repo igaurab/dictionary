@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The only key that can't be expressed as an INFOPLIST_KEY_ build
+	     setting. GENERATE_INFOPLIST_FILE stays on, so Xcode merges the
+	     generated keys (display name, scene manifest, orientations, launch
+	     screen) into this file at build time. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.igaurab.Dictionary.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dictionary</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

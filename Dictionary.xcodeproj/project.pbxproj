@@ -6,8 +6,63 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BB0000000000000000000001 /* DictionaryWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BB2000000000000000000001 /* DictionaryWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BB0100000000000000000001 /* DictionaryWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1000000000000000000001 /* DictionaryWidgetBundle.swift */; };
+		BB0100000000000000000002 /* WordOfTheDayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1000000000000000000002 /* WordOfTheDayWidget.swift */; };
+		BB0100000000000000000003 /* SearchWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1000000000000000000003 /* SearchWidget.swift */; };
+		BB0100000000000000000004 /* WidgetDictionaryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1000000000000000000004 /* WidgetDictionaryStore.swift */; };
+		BB0100000000000000000005 /* WidgetFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1000000000000000000005 /* WidgetFonts.swift */; };
+		BB0100000000000000000006 /* WidgetDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1000000000000000000006 /* WidgetDeepLink.swift */; };
+		BB0200000000000000000001 /* WordNet.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = BB1100000000000000000001 /* WordNet.sqlite */; };
+		BB0200000000000000000002 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB1100000000000000000002 /* Roboto-Regular.ttf */; };
+		BB0200000000000000000003 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB1100000000000000000003 /* Roboto-Medium.ttf */; };
+		BB0200000000000000000004 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB1100000000000000000004 /* Roboto-Bold.ttf */; };
+		BB0200000000000000000005 /* Roboto-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB1100000000000000000005 /* Roboto-Italic.ttf */; };
+		BB0200000000000000000006 /* Roboto-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB1100000000000000000006 /* Roboto-BoldItalic.ttf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BBE000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA9000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB5000000000000000000001;
+			remoteInfo = DictionaryWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BBC000000000000000000001 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BB0000000000000000000001 /* DictionaryWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		AA2000000000000000000001 /* Dictionary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dictionary.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB2000000000000000000001 /* DictionaryWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DictionaryWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB1000000000000000000001 /* DictionaryWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryWidgetBundle.swift; sourceTree = "<group>"; };
+		BB1000000000000000000002 /* WordOfTheDayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOfTheDayWidget.swift; sourceTree = "<group>"; };
+		BB1000000000000000000003 /* SearchWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchWidget.swift; sourceTree = "<group>"; };
+		BB1000000000000000000004 /* WidgetDictionaryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDictionaryStore.swift; sourceTree = "<group>"; };
+		BB1000000000000000000005 /* WidgetFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetFonts.swift; sourceTree = "<group>"; };
+		BB1000000000000000000006 /* WidgetDeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDeepLink.swift; sourceTree = "<group>"; };
+		BB1100000000000000000001 /* WordNet.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; name = WordNet.sqlite; path = Dictionary/Resources/WordNet.sqlite; sourceTree = SOURCE_ROOT; };
+		BB1100000000000000000002 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-Regular.ttf"; path = "Dictionary/Resources/Fonts/Roboto-Regular.ttf"; sourceTree = SOURCE_ROOT; };
+		BB1100000000000000000003 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-Medium.ttf"; path = "Dictionary/Resources/Fonts/Roboto-Medium.ttf"; sourceTree = SOURCE_ROOT; };
+		BB1100000000000000000004 /* Roboto-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-Bold.ttf"; path = "Dictionary/Resources/Fonts/Roboto-Bold.ttf"; sourceTree = SOURCE_ROOT; };
+		BB1100000000000000000005 /* Roboto-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-Italic.ttf"; path = "Dictionary/Resources/Fonts/Roboto-Italic.ttf"; sourceTree = SOURCE_ROOT; };
+		BB1100000000000000000006 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-BoldItalic.ttf"; path = "Dictionary/Resources/Fonts/Roboto-BoldItalic.ttf"; sourceTree = SOURCE_ROOT; };
+		BB1200000000000000000001 /* Dictionary-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Dictionary-Info.plist"; sourceTree = "<group>"; };
+		BB1200000000000000000002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -26,6 +81,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB3000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -33,6 +95,8 @@
 			isa = PBXGroup;
 			children = (
 				AA1000000000000000000001 /* Dictionary */,
+				BB4000000000000000000001 /* DictionaryWidget */,
+				BB4000000000000000000003 /* Supporting */,
 				AA4000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,8 +105,45 @@
 			isa = PBXGroup;
 			children = (
 				AA2000000000000000000001 /* Dictionary.app */,
+				BB2000000000000000000001 /* DictionaryWidget.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BB4000000000000000000001 /* DictionaryWidget */ = {
+			isa = PBXGroup;
+			children = (
+				BB1000000000000000000001 /* DictionaryWidgetBundle.swift */,
+				BB1000000000000000000002 /* WordOfTheDayWidget.swift */,
+				BB1000000000000000000003 /* SearchWidget.swift */,
+				BB1000000000000000000004 /* WidgetDictionaryStore.swift */,
+				BB1000000000000000000005 /* WidgetFonts.swift */,
+				BB1000000000000000000006 /* WidgetDeepLink.swift */,
+				BB1200000000000000000002 /* Info.plist */,
+				BB4000000000000000000002 /* Shared Resources */,
+			);
+			path = DictionaryWidget;
+			sourceTree = "<group>";
+		};
+		BB4000000000000000000002 /* Shared Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BB1100000000000000000001 /* WordNet.sqlite */,
+				BB1100000000000000000002 /* Roboto-Regular.ttf */,
+				BB1100000000000000000003 /* Roboto-Medium.ttf */,
+				BB1100000000000000000004 /* Roboto-Bold.ttf */,
+				BB1100000000000000000005 /* Roboto-Italic.ttf */,
+				BB1100000000000000000006 /* Roboto-BoldItalic.ttf */,
+			);
+			name = "Shared Resources";
+			sourceTree = "<group>";
+		};
+		BB4000000000000000000003 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				BB1200000000000000000001 /* Dictionary-Info.plist */,
+			);
+			path = Supporting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -55,10 +156,12 @@
 				AA7000000000000000000001 /* Sources */,
 				AA3000000000000000000001 /* Frameworks */,
 				AA8000000000000000000001 /* Resources */,
+				BBC000000000000000000001 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				BBD000000000000000000001 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				AA1000000000000000000001 /* Dictionary */,
@@ -69,6 +172,25 @@
 			productName = Dictionary;
 			productReference = AA2000000000000000000001 /* Dictionary.app */;
 			productType = "com.apple.product-type.application";
+		};
+		BB5000000000000000000001 /* DictionaryWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB6000000000000000000001 /* Build configuration list for PBXNativeTarget "DictionaryWidget" */;
+			buildPhases = (
+				BB7000000000000000000001 /* Sources */,
+				BB3000000000000000000001 /* Frameworks */,
+				BB8000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DictionaryWidget;
+			packageProductDependencies = (
+			);
+			productName = DictionaryWidget;
+			productReference = BB2000000000000000000001 /* DictionaryWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -82,6 +204,9 @@
 				TargetAttributes = {
 					AA5000000000000000000001 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					BB5000000000000000000001 = {
+						CreatedOnToolsVersion = 26.6;
 					};
 				};
 			};
@@ -100,6 +225,7 @@
 			projectRoot = "";
 			targets = (
 				AA5000000000000000000001 /* Dictionary */,
+				BB5000000000000000000001 /* DictionaryWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -109,6 +235,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB8000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB0200000000000000000001 /* WordNet.sqlite in Resources */,
+				BB0200000000000000000002 /* Roboto-Regular.ttf in Resources */,
+				BB0200000000000000000003 /* Roboto-Medium.ttf in Resources */,
+				BB0200000000000000000004 /* Roboto-Bold.ttf in Resources */,
+				BB0200000000000000000005 /* Roboto-Italic.ttf in Resources */,
+				BB0200000000000000000006 /* Roboto-BoldItalic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,7 +261,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB7000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB0100000000000000000001 /* DictionaryWidgetBundle.swift in Sources */,
+				BB0100000000000000000002 /* WordOfTheDayWidget.swift in Sources */,
+				BB0100000000000000000003 /* SearchWidget.swift in Sources */,
+				BB0100000000000000000004 /* WidgetDictionaryStore.swift in Sources */,
+				BB0100000000000000000005 /* WidgetFonts.swift in Sources */,
+				BB0100000000000000000006 /* WidgetDeepLink.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BBD000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB5000000000000000000001 /* DictionaryWidget */;
+			targetProxy = BBE000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AAA000000000000000000001 /* Debug */ = {
@@ -254,6 +414,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Supporting/Dictionary-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -283,6 +444,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Supporting/Dictionary-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -296,6 +458,58 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.igaurab.Dictionary;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BBA000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
+				INFOPLIST_FILE = DictionaryWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.igaurab.Dictionary.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BBA000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Dictionary;
+				INFOPLIST_FILE = DictionaryWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.igaurab.Dictionary.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -319,6 +533,15 @@
 			buildConfigurations = (
 				AAA000000000000000000003 /* Debug */,
 				AAA000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB6000000000000000000001 /* Build configuration list for PBXNativeTarget "DictionaryWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA000000000000000000001 /* Debug */,
+				BBA000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

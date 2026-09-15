@@ -18,6 +18,9 @@ final class DictionaryViewModel: ObservableObject {
     // MARK: Search
     @Published var searchText = ""
     @Published var suggestions: [String] = []
+    /// Drives `.searchable(isPresented:)`, so a `dictionary://search` tap from
+    /// the Home Screen widget can put the keyboard in the field.
+    @Published var isSearchPresented = false
 
     // MARK: Current entry + back/forward history (like Go > Back/Forward on macOS)
     @Published private(set) var currentLookup: LookupResult?
