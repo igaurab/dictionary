@@ -20,13 +20,13 @@ struct CatalogDictionary: Identifiable, Hashable, Sendable {
 
 enum DictionaryCatalog {
 
-    // MARK: - ▼▼▼ THE ONE CONSTANT TO EDIT ▼▼▼
+    // Each file is built by a script in `scripts/` and published as a release
+    // asset. `downloadBytes` is the size as served; the installer sniffs gzip
+    // from the magic bytes, so the same code works gzipped or raw.
     //
-    // Swap `url` for the GitHub Release asset URL once the release exists, e.g.
-    //   https://github.com/<user>/dictionary/releases/download/dict-es-v1/es-wiktionary.sqlite.gz
-    // and update `downloadBytes` to the asset's real size. Nothing else needs
-    // to change: the installer sniffs gzip from the file's magic bytes, so the
-    // same code works whether the asset is gzipped or raw.
+    // Dictionary content keeps the licence of the project it came from, which
+    // is why `licence` is shown next to every entry rather than buried in the
+    // about screen.
 
     static let entries: [CatalogDictionary] = [
         CatalogDictionary(
@@ -38,6 +38,26 @@ enum DictionaryCatalog {
             licence: "CC BY-SA 4.0",
             summary: "Diccionario monolingüe: palabras españolas definidas en español.",
             url: URL(string: "https://github.com/igaurab/dictionary/releases/download/dictionaries-v1/es-wiktionary.sqlite.gz")!
+        ),
+        CatalogDictionary(
+            id: "hi-wiktionary",
+            name: "हिन्दी विक्षनरी",
+            language: "हिन्दी",
+            entryCount: 165_231,
+            downloadBytes: 16_418_640,
+            licence: "CC BY-SA 4.0",
+            summary: "एकभाषी शब्दकोश: हिन्दी शब्दों के अर्थ हिन्दी में। अधिकांश अर्थ हिन्दी शब्दसागर से।",
+            url: URL(string: "https://github.com/igaurab/dictionary/releases/download/dictionaries-v1/hi-wiktionary.sqlite.gz")!
+        ),
+        CatalogDictionary(
+            id: "ne-sabdakosh",
+            name: "नेपाली बृहत् शब्दकोश",
+            language: "नेपाली",
+            entryCount: 123_371,
+            downloadBytes: 7_492_246,
+            licence: "नेपाल प्रज्ञा-प्रतिष्ठान · via yoshabdakosh (MIT)",
+            summary: "एकभाषी शब्दकोश: नेपाली शब्दहरूको अर्थ नेपालीमै। नेपाल प्रज्ञा-प्रतिष्ठानको बृहत् शब्दकोशबाट।",
+            url: URL(string: "https://github.com/igaurab/dictionary/releases/download/dictionaries-v1/ne-sabdakosh.sqlite.gz")!
         )
     ]
 
