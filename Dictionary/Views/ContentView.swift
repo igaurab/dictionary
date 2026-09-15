@@ -61,17 +61,33 @@ struct ContentView: View {
             if model.searchText.trimmingCharacters(in: .whitespaces).isEmpty {
                 emptySearchState
             } else if model.suggestions.isEmpty {
-                ContentUnavailableView.search(text: model.searchText)
-            } else {
-                List(model.suggestions, id: \.self) { word in
-                    Button {
-                        model.lookUp(word)
-                    } label: {
-                        Text(word)
-                            .foregroundStyle(.primary)
-                    }
+                VStack(spacing: 0) {
+                    SourceBar(resultCount: 0)
+                    Divider()
+                    Text("No entries found for \u{201C}\(model.searchText)\u{201D}")
+                        .font(.roboto(15))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                        .padding(.top, 28)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 }
-                .listStyle(.plain)
+            } else {
+                // The source bar rides above the results, as it does on macOS,
+                // so the top of the screen isn't blank while you search.
+                VStack(spacing: 0) {
+                    SourceBar(resultCount: model.suggestions.count)
+                    Divider()
+                    List(model.suggestions, id: \.self) { word in
+                        Button {
+                            model.lookUp(word)
+                        } label: {
+                            Text(word)
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                    .listStyle(.plain)
+                }
             }
         }
         .navigationTitle("Dictionary")

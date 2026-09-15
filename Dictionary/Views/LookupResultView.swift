@@ -59,14 +59,7 @@ struct EntryScrollView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("Source", selection: $model.source) {
-                ForEach(DictionarySource.allCases) { source in
-                    Text(source.rawValue).tag(source)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            SourceBar()
 
             Divider()
 
