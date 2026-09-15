@@ -28,6 +28,13 @@ enum DictionaryCatalog {
     // is why `licence` is shown next to every entry rather than buried in the
     // about screen.
 
+    // Sizes here are the full editions, which include bot-generated inflected
+    // forms - the entries that let "Häuser" and "courais" resolve at all.
+    // Lemma-only builds of German and French exist as `*-lemmas.sqlite.gz`
+    // assets in the same release (12.6 MB and 30.5 MB) if the download size
+    // matters more than looking up a conjugated word; switching is a change of
+    // `url`, `entryCount` and `downloadBytes` here and nothing else.
+
     static let entries: [CatalogDictionary] = [
         CatalogDictionary(
             id: "es-wiktionary",
@@ -38,6 +45,26 @@ enum DictionaryCatalog {
             licence: "CC BY-SA 4.0",
             summary: "Diccionario monolingüe: palabras españolas definidas en español.",
             url: URL(string: "https://github.com/igaurab/dictionary/releases/download/dictionaries-v1/es-wiktionary.sqlite.gz")!
+        ),
+        CatalogDictionary(
+            id: "de-wiktionary",
+            name: "Wiktionary (Deutsch)",
+            language: "Deutsch",
+            entryCount: 959_164,
+            downloadBytes: 47_138_602,
+            licence: "CC BY-SA 4.0",
+            summary: "Einsprachiges Wörterbuch: deutsche Wörter auf Deutsch erklärt, mit gebeugten Formen.",
+            url: URL(string: "https://github.com/igaurab/dictionary/releases/download/dictionaries-v1/de-wiktionary.sqlite.gz")!
+        ),
+        CatalogDictionary(
+            id: "fr-wiktionary",
+            name: "Wiktionnaire (Français)",
+            language: "Français",
+            entryCount: 2_029_440,
+            downloadBytes: 74_414_944,
+            licence: "CC BY-SA 4.0",
+            summary: "Dictionnaire monolingue : mots français définis en français, formes fléchies comprises.",
+            url: URL(string: "https://github.com/igaurab/dictionary/releases/download/dictionaries-v1/fr-wiktionary.sqlite.gz")!
         ),
         CatalogDictionary(
             id: "hi-wiktionary",
