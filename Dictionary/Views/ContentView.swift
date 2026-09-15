@@ -57,39 +57,9 @@ struct ContentView: View {
     // MARK: Sidebar — live search results, like the macOS Dictionary sidebar
 
     private var sidebar: some View {
-        Group {
-            if model.searchText.trimmingCharacters(in: .whitespaces).isEmpty {
-                emptySearchState
-            } else if model.suggestions.isEmpty {
-                VStack(spacing: 0) {
-                    SourceBar(resultCount: 0)
-                    Divider()
-                    Text("No entries found for \u{201C}\(model.searchText)\u{201D}")
-                        .font(.roboto(15))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 24)
-                        .padding(.top, 28)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                }
-            } else {
-                // The source bar rides above the results, as it does on macOS,
-                // so the top of the screen isn't blank while you search.
-                VStack(spacing: 0) {
-                    SourceBar(resultCount: model.suggestions.count)
-                    Divider()
-                    List(model.suggestions, id: \.self) { word in
-                        Button {
-                            model.lookUp(word)
-                        } label: {
-                            Text(word)
-                                .foregroundStyle(.primary)
-                        }
-                    }
-                    .listStyle(.plain)
-                }
-            }
-        }
+        // SidebarBody is a child of the searchable modifier, which is what lets
+        // it read \.isSearching and offer recents the moment the field is tapped.
+        SidebarBody()
         .navigationTitle("Dictionary")
         // .toolbar puts the field in the bottom bar on iPhone, within thumb
         // reach, the way the iOS 26 system apps place search.
@@ -133,48 +103,6 @@ struct ContentView: View {
         }
     }
 
-    @ViewBuilder
-    private var emptySearchState: some View {
-        if model.showRecentsOnHome && !model.recents.isEmpty {
-            List {
-                Section("Recent") {
-                    ForEach(model.recents.prefix(25), id: \.self) { word in
-                        Button {
-                            model.lookUp(word)
-                        } label: {
-                            Text(word)
-                        }
-                        // Recents are a quiet backdrop to the search field, not
-                        // the point of the screen: smaller and grey rather than
-                        // full-size accent-coloured rows.
-                        .buttonStyle(.plain)
-                        .font(.roboto(15))
-                        .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .listStyle(.insetGrouped)
-        } else {
-            emptyPage("Type a word to look up in\u{2026}")
-        }
-    }
-
-    /// The macOS Dictionary app's empty page: no artwork, just the prompt and
-    /// the name of the dictionary being searched, centred and grey.
-    private func emptyPage(_ prompt: String) -> some View {
-        VStack(spacing: 22) {
-            Text(prompt)
-                .font(.roboto(15))
-            Text(model.activeDictionaryName)
-                .font(.roboto(19))
-        }
-        .foregroundStyle(.secondary)
-        .multilineTextAlignment(.center)
-        .padding(.horizontal, 24)
-        .padding(.top, 28)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    }
-
     // MARK: Detail — the entry itself
 
     @ViewBuilder
@@ -201,7 +129,7 @@ struct ContentView: View {
                     }
                 }
         } else {
-            emptyPage("Type a word to look up in\u{2026}")
+            EmptyPage(prompt: "Type a word to look up in\u{2026}")
         }
     }
 }

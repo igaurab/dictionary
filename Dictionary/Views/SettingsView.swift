@@ -5,6 +5,9 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var model: DictionaryViewModel
     @Environment(\.dismiss) private var dismiss
+    /// Mirrors SpotlightIndexer's own default so the toggle reads correctly
+    /// before the indexer has ever run.
+    @AppStorage("spotlightIndexingEnabled") private var spotlightEnabled = true
 
     var body: some View {
         NavigationStack {
@@ -27,6 +30,13 @@ struct SettingsView: View {
                     .disabled(model.textScale == 1.0)
                 }
 
+                Section("Spotlight") {
+                    Toggle("Look Up from Home Screen", isOn: $spotlightEnabled)
+                    Text("Adds every word to iPhone search, so swiping down on the home screen and typing a word shows its definition. Indexing 147,478 words takes a minute the first time.")
+                        .font(.roboto(13))
+                        .foregroundStyle(.secondary)
+                }
+
                 Section("Home Screen") {
                     Toggle("Show Recent Searches", isOn: $model.showRecentsOnHome)
                     Text("When off, the app opens on an empty page. Recent searches are always available from the ••• menu.")
@@ -45,6 +55,17 @@ struct SettingsView: View {
                     Text("This dictionary works entirely offline. Definitions, examples, synonyms, and antonyms come from WordNet 3.1, © 2011 Princeton University, used under the WordNet license. Pronunciations are derived from the CMU Pronouncing Dictionary, © Carnegie Mellon University, used under its BSD-style license. Set in Roboto, © 2011 The Roboto Project Authors, used under the SIL Open Font License 1.1.")
                         .font(.roboto(13))
                         .foregroundStyle(.secondary)
+                }
+            }
+            .onChange(of: spotlightEnabled) { _, isOn in
+                // AppStorage has already written the flag; this kicks off the
+                // index build or teardown to match.
+                Task.detached(priority: .utility) {
+                    if isOn {
+                        await SpotlightIndexer.indexIfNeeded(force: true)
+                    } else {
+                        await SpotlightIndexer.deleteIndex()
+                    }
                 }
             }
             .navigationTitle("Settings")
