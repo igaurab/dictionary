@@ -2,8 +2,9 @@
 
 A native SwiftUI dictionary app for iPhone and iPad, designed to feel like a
 mobile version of the Dictionary app that ships with macOS — and it works
-**completely offline**. No network access, no accounts, no tracking: the entire
-dictionary ships inside the app bundle.
+**completely offline**. No accounts, no tracking, no network calls to look a
+word up: English ships inside the app bundle, and other languages are
+downloaded once and then live on the device.
 
 ## Data sources
 
@@ -19,6 +20,49 @@ dictionary ships inside the app bundle.
 Both are compiled into a single 38 MB SQLite database
 (`Dictionary/Resources/WordNet.sqlite`) that ships in the app bundle, so every
 feature works in airplane mode.
+
+### Downloadable dictionaries
+
+Only English ships inside the app. Other languages are downloaded on demand
+from **Settings ▸ Dictionaries**, the way iOS downloads languages, so the app
+binary does not grow with every dictionary added. Downloaded dictionaries are
+stored on the device, work offline, and can be removed at any time.
+
+| Dictionary | Language | Entries | Download | Licence |
+| --- | --- | ---: | ---: | --- |
+| Wikcionario (Español) | Spanish, monolingual | 814,879 | 26.7 MB | CC BY-SA 4.0 |
+
+They are built from public sources by the scripts in `scripts/`, published as
+release assets, and listed in `Dictionary/Database/DictionaryCatalog.swift`.
+
+### Typography
+
+Set in **Roboto** by Christian Robertson, © 2011 The Roboto Project Authors,
+used under the [SIL Open Font License 1.1](LICENSES/Roboto-OFL.txt). Google's
+own dictionary renders in `"Google Sans Text", Roboto, Arial, sans-serif`;
+Google Sans is proprietary, so the app ships Roboto, the first freely
+licensable face in that stack.
+
+## Credits
+
+This app is a shell around other people's lexicography. The dictionaries are
+the work of the projects below, and the app is only useful because they chose
+to publish openly.
+
+- **WordNet 3.1** — © 2011 The Trustees of Princeton University. Used under the
+  [WordNet licence](LICENSES/WordNet-3.1-LICENSE.txt).
+- **CMU Pronouncing Dictionary** — © Carnegie Mellon University. Used under its
+  [BSD-style licence](LICENSES/CMUdict-LICENSE.txt).
+- **Wikcionario (Spanish Wiktionary)** — © Wikcionario contributors, used under
+  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Built from
+  the [Wikimedia dumps](https://dumps.wikimedia.org/eswiktionary/) by
+  `scripts/build_wiktionary_es.py`.
+- **Roboto** — © 2011 The Roboto Project Authors, SIL Open Font License 1.1.
+
+Application code is MIT licensed. Dictionary content keeps the licence of the
+project it came from; redistributing this app means redistributing their work
+under their terms, and each dictionary carries its licence in the app's
+Dictionaries screen as well as here.
 
 ## Features (matching the macOS Dictionary app)
 
@@ -83,6 +127,4 @@ LICENSES/                      WordNet and CMUdict license texts
 
 ## Licenses
 
-Application code is provided under the MIT license. Dictionary content is
-© Princeton University (WordNet license) and © Carnegie Mellon University
-(BSD-style license); see the `LICENSES/` directory.
+See **Credits** above. Licence texts are in the `LICENSES/` directory.
