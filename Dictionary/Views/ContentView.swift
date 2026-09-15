@@ -7,6 +7,8 @@ struct ContentView: View {
     @State private var showingHistory = false
     @State private var showingFavorites = false
     @State private var showingQuiz = false
+    @State private var showingFlashcards = false
+    @State private var showingRandomFlashcards = false
     @State private var showingSettings = false
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
@@ -57,6 +59,13 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingFavorites) {
             FavoritesView { model.lookUp($0) }
+        }
+        .sheet(isPresented: $showingFlashcards) {
+            // Same pool as the quiz: words you kept, then words you looked up.
+            FlashcardsView(source: .recents, words: favorites.words + model.recents)
+        }
+        .sheet(isPresented: $showingRandomFlashcards) {
+            FlashcardsView(source: .random)
         }
         .sheet(isPresented: $showingQuiz) {
             // Quizzing on words you actually looked up is the point; favourites
@@ -112,11 +121,21 @@ struct ContentView: View {
                     } label: {
                         Label("Quiz", systemImage: "checkmark.circle")
                     }
+                    Button {
+                        showingFlashcards = true
+                    } label: {
+                        Label("Flashcards", systemImage: "rectangle.on.rectangle")
+                    }
                     Divider()
                     Button {
                         model.lookUpRandomWord()
                     } label: {
                         Label("Random Word", systemImage: "dice")
+                    }
+                    Button {
+                        showingRandomFlashcards = true
+                    } label: {
+                        Label("Random Flashcards", systemImage: "rectangle.on.rectangle.angled")
                     }
                 } label: {
                     Label("More", systemImage: "ellipsis.circle")
