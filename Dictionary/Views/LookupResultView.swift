@@ -16,7 +16,13 @@ struct LookupResultView: View {
             EntryScrollView(entries: entries, redirectedFrom: from)
 
         case .notFound(let suggestions):
-            noEntryView(suggestions: suggestions)
+            if model.importedEntries.isEmpty {
+                noEntryView(suggestions: suggestions)
+            } else {
+                // WordNet doesn't have it, but an imported dictionary does -
+                // the usual case for a word in another language.
+                EntryScrollView(entries: [], redirectedFrom: nil)
+            }
         }
     }
 
@@ -74,6 +80,12 @@ struct EntryScrollView: View {
                             Divider()
                         }
                     }
+                    ForEach(model.importedEntries) { imported in
+                        if !entries.isEmpty || imported != model.importedEntries.first {
+                            Divider()
+                        }
+                        importedSection(imported)
+                    }
                     attributionFooter
                 }
                 .frame(maxWidth: 700, alignment: .leading)
@@ -83,7 +95,28 @@ struct EntryScrollView: View {
             }
         }
         .background(Color(.systemBackground))
-        .navigationTitle(entries.first?.word ?? "")
+        .navigationTitle(entries.first?.word ?? model.currentTerm ?? "")
+    }
+
+    /// An imported dictionary's text for the word. StarDict entries are free
+    /// text rather than structured senses, so they are shown as a block under
+    /// the dictionary's own name.
+    @ViewBuilder
+    private func importedSection(_ imported: ImportedDefinition) -> some View {
+        let scale = CGFloat(model.textScale)
+        VStack(alignment: .leading, spacing: 10) {
+            if entries.isEmpty && imported == model.importedEntries.first {
+                Text(model.currentTerm ?? "")
+                    .font(.roboto(34 * scale))
+            }
+            Text(imported.dictionaryName.uppercased())
+                .font(.roboto(13 * scale, weight: .medium))
+                .foregroundStyle(.secondary)
+            Divider()
+            Text(.lookupText(imported.definition))
+                .font(.roboto(17 * scale))
+                .textSelection(.enabled)
+        }
     }
 
     private func redirectNote(from: String) -> some View {
@@ -93,11 +126,16 @@ struct EntryScrollView: View {
             .foregroundStyle(.secondary)
     }
 
+    /// Only credit WordNet when WordNet actually supplied something: an entry
+    /// that came entirely from an imported dictionary is not theirs.
+    @ViewBuilder
     private var attributionFooter: some View {
-        Text("WordNet 3.1 © Princeton University · Pronunciations from the CMU Pronouncing Dictionary")
-            .font(.roboto(11))
-            .foregroundStyle(.tertiary)
-            .padding(.top, 12)
+        if !entries.isEmpty {
+            Text("WordNet 3.1 © Princeton University · Pronunciations from the CMU Pronouncing Dictionary")
+                .font(.roboto(11))
+                .foregroundStyle(.tertiary)
+                .padding(.top, 12)
+        }
     }
 }
 

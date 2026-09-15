@@ -13,6 +13,7 @@ enum DictionarySource: String, CaseIterable, Identifiable {
 @MainActor
 final class DictionaryViewModel: ObservableObject {
     private let store = DictionaryStore.shared
+    private let library = DictionaryLibrary.shared
 
     // MARK: Search
     @Published var searchText = ""
@@ -21,6 +22,9 @@ final class DictionaryViewModel: ObservableObject {
     // MARK: Current entry + back/forward history (like Go > Back/Forward on macOS)
     @Published private(set) var currentLookup: LookupResult?
     @Published private(set) var currentTerm: String?
+    /// Definitions for the current term from imported StarDict dictionaries,
+    /// shown alongside (or instead of) the bundled WordNet entry.
+    @Published private(set) var importedEntries: [ImportedDefinition] = []
     private var backStack: [String] = []
     private var forwardStack: [String] = []
 
@@ -65,8 +69,14 @@ final class DictionaryViewModel: ObservableObject {
             suggestions = []
             return
         }
-        searchTask = Task { [store] in
-            let results = store.suggestions(matching: query)
+        searchTask = Task { [store, library] in
+            var results = store.suggestions(matching: query)
+            // Imported dictionaries are searched too, so a word that only
+            // exists in an added language still turns up.
+            var seen = Set(results.map { $0.lowercased() })
+            for word in library.suggestions(matching: query) where seen.insert(word.lowercased()).inserted {
+                results.append(word)
+            }
             if !Task.isCancelled {
                 self.suggestions = results
             }
@@ -106,6 +116,7 @@ final class DictionaryViewModel: ObservableObject {
     func closeEntry() {
         currentTerm = nil
         currentLookup = nil
+        importedEntries = []
         backStack.removeAll()
         forwardStack.removeAll()
     }
@@ -120,8 +131,13 @@ final class DictionaryViewModel: ObservableObject {
         let result = store.lookup(term)
         currentTerm = term
         currentLookup = result
+        importedEntries = library.definitions(for: term).map {
+            ImportedDefinition(dictionaryName: $0.dictionary.name, definition: $0.definition)
+        }
 
-        if case .notFound = result { return }
+        // A word absent from WordNet but present in an imported dictionary is
+        // still a hit, and belongs in recents.
+        if case .notFound = result, importedEntries.isEmpty { return }
         let display = displayName(for: result) ?? term
         recents.removeAll { $0.lowercased() == display.lowercased() }
         recents.insert(display, at: 0)
@@ -134,7 +150,15 @@ final class DictionaryViewModel: ObservableObject {
         switch result {
         case .found(let entry): return entry.word
         case .redirected(let from, _): return from
-        case .notFound: return nil
+        case .notFound: return currentTerm
         }
     }
+}
+
+
+/// One imported dictionary's definition of the current headword.
+struct ImportedDefinition: Identifiable, Equatable, Hashable {
+    let dictionaryName: String
+    let definition: String
+    var id: String { dictionaryName + "\u{0000}" + definition }
 }
