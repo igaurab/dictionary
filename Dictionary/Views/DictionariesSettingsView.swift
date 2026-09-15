@@ -52,7 +52,7 @@ struct DictionariesSettingsView: View {
                         Button("Add Dictionary\u{2026}") { isChoosingFile = true }
                     }
                 } footer: {
-                    Text("Choose a StarDict dictionary: a .zip, or a folder containing the .ifo, .idx and .dict files. Imported dictionaries work offline like the built-in one.")
+                    Text("Choose a StarDict dictionary: a .tar.xz, .tar.gz or .zip archive, or a folder containing the .ifo, .idx and .dict files. Imported dictionaries work offline like the built-in one.")
                         .font(.roboto(13))
                 }
             }

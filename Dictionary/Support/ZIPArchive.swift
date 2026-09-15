@@ -108,8 +108,13 @@ enum ZIPArchive {
         var url = directory
         for component in components { url.appendPathComponent(component) }
 
-        let root = directory.standardizedFileURL.path
-        guard url.standardizedFileURL.path.hasPrefix(root) else {
+        // Compare lexically and by path component. `standardizedFileURL` would
+        // touch the filesystem, which resolves /private/tmp -> /tmp for a
+        // directory that exists but not for an entry that doesn't yet, so the
+        // two sides never line up. Comparing components rather than a string
+        // prefix also closes the sibling-prefix hole (/root vs /rootevil).
+        let root = directory.standardized.pathComponents
+        guard url.standardized.pathComponents.starts(with: root) else {
             throw Failure.unsafeEntryPath(name)
         }
         return url

@@ -22,11 +22,11 @@ enum StarDictImportError: LocalizedError {
             return "That file or folder could not be opened."
         case .unsupportedSource(let ext):
             let name = ext.isEmpty ? "file" : ".\(ext) file"
-            return "This \(name) isn't a StarDict dictionary. Choose a .zip, "
-                + "or a folder containing the .ifo, .idx and .dict files."
+            return "This \(name) isn't a StarDict dictionary. Choose a .tar.xz, .tar.gz or "
+                + ".zip archive, or a folder containing the .ifo, .idx and .dict files."
         case .unreadableArchive:
-            return "That ZIP archive could not be read. If it is a .tar.gz or .tar.bz2, "
-                + "unpack it first and choose the resulting folder."
+            return "That archive could not be read. It may be incomplete or damaged \u{2014} "
+                + "try downloading it again, or unpack it and choose the resulting folder."
         case .missingInfoFile:
             return "No .ifo file was found. A StarDict dictionary needs .ifo, .idx and .dict files."
         case .missingIndexFile:
@@ -73,18 +73,18 @@ struct StarDictImporter {
         let folder: URL
         if isDirectory.boolValue {
             folder = source
-        } else if source.pathExtension.lowercased() == "zip" {
+        } else if source.pathExtension.lowercased() == "ifo" {
+            folder = source.deletingLastPathComponent()
+        } else if let format = try archiveFormat(of: source) {
             let temp = fileManager.temporaryDirectory
                 .appendingPathComponent("stardict-\(UUID().uuidString)", isDirectory: true)
             scratch = temp
             do {
-                try ZIPArchive.extract(source, into: temp)
+                try extract(source, format: format, into: temp)
             } catch {
                 throw StarDictImportError.unreadableArchive
             }
             folder = temp
-        } else if source.pathExtension.lowercased() == "ifo" {
-            folder = source.deletingLastPathComponent()
         } else {
             throw StarDictImportError.unsupportedSource(source.pathExtension.lowercased())
         }
@@ -585,6 +585,62 @@ struct StarDictImporter {
     private static func lastErrorMessage(_ db: OpaquePointer) -> String {
         guard let message = sqlite3_errmsg(db) else { return "unknown error" }
         return String(cString: message)
+    }
+
+    // MARK: - Archives
+
+    /// The container formats a StarDict download arrives in. FreeDict and the
+    /// other public mirrors ship `.tar.xz`; `.zip` is what a re-packaged
+    /// dictionary usually looks like.
+    private enum ArchiveFormat {
+        case zip
+        case tar
+        case tarXZ
+        case tarGZ
+    }
+
+    /// Recognises the container by name, falling back to the leading magic
+    /// bytes — iOS strips or rewrites extensions often enough (a `.tar.xz`
+    /// saved from Safari can arrive as `.txz` or with no extension at all)
+    /// that the name alone is not reliable. Returns nil when this is not an
+    /// archive at all, so the caller can report an unsupported file type.
+    private static func archiveFormat(of url: URL) throws -> ArchiveFormat? {
+        let name = url.lastPathComponent.lowercased()
+        if name.hasSuffix(".zip") { return .zip }
+        if name.hasSuffix(".tar.xz") || name.hasSuffix(".txz") { return .tarXZ }
+        if name.hasSuffix(".tar.gz") || name.hasSuffix(".tgz") { return .tarGZ }
+        if name.hasSuffix(".tar") { return .tar }
+        if name.hasSuffix(".xz") { return .tarXZ }
+        if name.hasSuffix(".gz") { return .tarGZ }
+
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? handle.close() }
+        guard let head = try? handle.read(upToCount: 512), head.count >= 4 else { return nil }
+
+        if XZArchive.hasMagic(head) { return .tarXZ }
+        if TarArchive.hasUstarMagic(head) { return .tar }
+        let start = head.startIndex
+        if head[start] == 0x1F, head[start + 1] == 0x8B { return .tarGZ }
+        if head[start] == 0x50, head[start + 1] == 0x4B { return .zip }
+        return nil
+    }
+
+    private static func extract(_ source: URL, format: ArchiveFormat, into directory: URL) throws {
+        if case .zip = format {
+            try ZIPArchive.extract(source, into: directory)
+            return
+        }
+        // Mapped, so the compressed archive itself never counts twice against
+        // the memory this import already needs for the decompressed tar.
+        let data = try Data(contentsOf: source, options: .mappedIfSafe)
+        let tar: Data
+        switch format {
+        case .tarXZ: tar = try XZArchive.decompress(data)
+        case .tarGZ: tar = Data(try Zlib.gunzip(data))
+        case .tar: tar = data
+        case .zip: return
+        }
+        try TarArchive.extract(tar, into: directory)
     }
 
     // MARK: - Files
